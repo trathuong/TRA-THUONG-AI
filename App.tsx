@@ -187,9 +187,24 @@ interface ControlPanelProps {
     backgroundImage: ImageFile | null;
     numImages: number;
     onNumImagesChange: (value: number) => void;
+    keepOriginalFace: boolean;
+    onKeepOriginalFaceChange: (value: boolean) => void;
+    smoothSkin: boolean;
+    onSmoothSkinChange: (value: boolean) => void;
+    removeAcne: boolean;
+    onRemoveAcneChange: (value: boolean) => void;
+    increaseSharpness: boolean;
+    onIncreaseSharpnessChange: (value: boolean) => void;
 }
 const ControlPanel: React.FC<ControlPanelProps> = (props) => {
-    const { prompt, onPromptChange, onGenerate, onStartOver, onBackgroundImageUpload, isLoading, hasOriginalImage, backgroundImage, numImages, onNumImagesChange } = props;
+    const { 
+        prompt, onPromptChange, onGenerate, onStartOver, onBackgroundImageUpload, 
+        isLoading, hasOriginalImage, backgroundImage, numImages, onNumImagesChange,
+        keepOriginalFace, onKeepOriginalFaceChange,
+        smoothSkin, onSmoothSkinChange,
+        removeAcne, onRemoveAcneChange,
+        increaseSharpness, onIncreaseSharpnessChange
+     } = props;
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleBgUploadClick = () => {
@@ -212,19 +227,98 @@ const ControlPanel: React.FC<ControlPanelProps> = (props) => {
                 ចាប់ផ្តើមម្តងទៀតជាមួយរូបភាពថ្មី
             </button>
             <div className="space-y-4">
-                <label className="flex items-center gap-2 font-semibold text-gray-800">
-                    <MagicWandIcon className="w-5 h-5 text-blue-600" />
-                    ពិពណ៌នាផ្ទៃខាងក្រោយថ្មី
-                </label>
+                <div className="flex justify-between items-center flex-wrap gap-2">
+                    <label className="flex items-center gap-2 font-semibold text-gray-800" htmlFor="prompt-textarea">
+                        <MagicWandIcon className="w-5 h-5 text-blue-600" />
+                        ពិពណ៌នាផ្ទៃខាងក្រោយថ្មី
+                    </label>
+                    <div className="flex items-center gap-3 flex-wrap justify-end">
+                        <button
+                            onClick={() => onPromptChange('វាលស្រែពណ៌មាសនៅជនបទខ្មែរ')}
+                            className="text-sm font-medium text-blue-600 hover:underline disabled:text-gray-400 disabled:no-underline"
+                            disabled={!hasOriginalImage || isLoading}
+                            title="បំពេញដោយស្វ័យប្រវត្តិជាមួយ 'វាលស្រែពណ៌មាសនៅជនបទខ្មែរ'"
+                        >
+                            វាលស្រែ
+                        </button>
+                        <button
+                            onClick={() => onPromptChange('បង្កើតឆាកមហោស្រពអាពាហ៍ពិពាហ៍ដ៏ស្រស់ស្អាត មានពិដានខ្ពស់ អំពូលពិដានតុបតែងដោយកញ្ចក់ភ្លឺថ្លា ព្រមទាំងផ្កាកុលាបពណ៌ស និងផ្កាពណ៌ផ្កាឈូកត្រូវបានរៀបចំជុំវិញជួរឈរ។ បរិយាកាសទាំងមូលមានពន្លឺធម្មជាតិចូលតាមបង្អួចធំ ធ្វើឲ្យឆាកមានអារម្មណ៍ទន់ភ្លន់ និងរ៉ូមែនទិកសម្រាប់ពិធីមង្គលការ។')}
+                            className="text-sm font-medium text-blue-600 hover:underline disabled:text-gray-400 disabled:no-underline"
+                            disabled={!hasOriginalImage || isLoading}
+                            title="បំពេញដោយស្វ័យប្រវត្តិជាមួយការពិពណ៌នាឆាកអាពាហ៍ពិពាហ៍"
+                        >
+                            ឆាកអាពាហ៍ពិពាហ៍
+                        </button>
+                        <button
+                            onClick={() => onPromptChange('បង្កើតឆាកអាពាហ៍ពិពាហ៍ដ៏ស្រស់ស្អាតមួយនៅខាងក្រៅ ក្នុងសួនបៃតងស្រស់។ ឆាកនេះតុបតែងដោយផ្កាអ័រគីដេពណ៌ស និងផ្កាឈូកជាច្រើន រួមជាមួយក្រណាត់សូត្រពណ៌មាសដែលរំលេចជុំវិញ។ នៅកណ្តាលមានខ្លោងទ្វារបែបប្រពៃណីខ្មែរឆ្លាក់យ៉ាងប្រណីត ហើយពន្លឺថ្ងៃពេលរសៀលចាំងចូល បង្កើតបានជាទិដ្ឋភាពដ៏កក់ក្តៅ និងរ៉ូមែនទិក។')}
+                            className="text-sm font-medium text-blue-600 hover:underline disabled:text-gray-400 disabled:no-underline"
+                            disabled={!hasOriginalImage || isLoading}
+                            title="បំពេញដោយស្វ័យប្រវត្តិជាមួយការពិពណ៌នាឆាកអាពាហ៍ពិពាហ៍ដ៏ស្រស់ស្អាត"
+                        >
+                            ឆាកអាពាហ៍ពិពាហ៍ដ៏ស្រស់ស្អាត
+                        </button>
+                        <button
+                            onClick={() => onPromptChange('បង្កើតឆាកថតរូបនៅក្នុងបន្ទប់អាពាហ៍ពិពាហ៍ប្រណិត ដែលមានជញ្ជាំងពណ៌សតុបតែងដោយលំនាំសិល្បៈស្រស់ស្អាត។ នៅជ្រុងបន្ទប់មានតុឈើតូចដ៏ប្រណិត ដាក់លើវាជាពានមាសខ្មែរ ដែលមានទ្រង់ទ្រាយប្រពៃណី និងរុំដោយអារម្មណ៍វប្បធម៌ខ្មែរ។ បរិយាកាសទាំងមូលបង្ហាញពីភាពសិរីល្អ ទន់ភ្លន់ និងអាចប្រើសម្រាប់ថតរូបមង្គលការ។')}
+                            className="text-sm font-medium text-blue-600 hover:underline disabled:text-gray-400 disabled:no-underline"
+                            disabled={!hasOriginalImage || isLoading}
+                            title="បំពេញដោយស្វ័យប្រវត្តិជាមួយការពិពណ៌នាបន្ទប់អាពាហ៍ពិពាហ៍ប្រណិត"
+                        >
+                            បន្ទប់អាពាហ៍ពិពាហ៍ប្រណិត
+                        </button>
+                    </div>
+                </div>
                 <textarea
+                    id="prompt-textarea"
                     value={prompt}
                     onChange={(e) => onPromptChange(e.target.value)}
-                    placeholder="ឧទាហរណ៍៖ 'សួនជប៉ុនដ៏ស្ងប់ស្ងាត់'"
+                    placeholder="ឧទាហរណ៍៖ 'ប្រាសាទខ្មែរបុរាណព័ទ្ធជុំវិញដោយព្រៃស្រោង'"
                     className="w-full h-28 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
                     rows={4}
                     disabled={!hasOriginalImage || isLoading}
                 />
-                <div className="flex items-center gap-3">
+                <div className="space-y-2 text-sm text-gray-700">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={keepOriginalFace}
+                            onChange={(e) => onKeepOriginalFaceChange(e.target.checked)}
+                            disabled={!hasOriginalImage || isLoading}
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 disabled:opacity-50"
+                        />
+                        រក្សា​មុខ​ដើម
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={smoothSkin}
+                            onChange={(e) => onSmoothSkinChange(e.target.checked)}
+                            disabled={!hasOriginalImage || isLoading}
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 disabled:opacity-50"
+                        />
+                        ធ្វើ​ឱ្យ​ស្បែក​រលោង
+                    </label>
+                     <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={removeAcne}
+                            onChange={(e) => onRemoveAcneChange(e.target.checked)}
+                            disabled={!hasOriginalImage || isLoading}
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 disabled:opacity-50"
+                        />
+                        លុប​បំបាត់​មុន
+                    </label>
+                     <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={increaseSharpness}
+                            onChange={(e) => onIncreaseSharpnessChange(e.target.checked)}
+                            disabled={!hasOriginalImage || isLoading}
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 disabled:opacity-50"
+                        />
+                        បង្កើនភាពច្បាស់
+                    </label>
+                </div>
+                <div className="flex items-center gap-3 pt-2">
                     <select 
                         className="flex-shrink-0 w-auto px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" 
                         disabled={isLoading || !hasOriginalImage}
@@ -283,6 +377,11 @@ export default function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [numImages, setNumImages] = useState<number>(1);
+  const [keepOriginalFace, setKeepOriginalFace] = useState<boolean>(true);
+  const [smoothSkin, setSmoothSkin] = useState<boolean>(true);
+  const [removeAcne, setRemoveAcne] = useState<boolean>(true);
+  const [increaseSharpness, setIncreaseSharpness] = useState<boolean>(true);
+
 
   const handleImageUpload = (setter: React.Dispatch<React.SetStateAction<ImageFile | null>>) => (file: File) => {
     setter({
@@ -321,7 +420,7 @@ export default function App() {
         const backgroundImagePart = backgroundImage ? await fileToGenerativePart(backgroundImage.file) : null;
         
         const generationPromises = Array.from({ length: numImages }).map(() => 
-            generateImage(originalImagePart, prompt, backgroundImagePart)
+            generateImage(originalImagePart, prompt, backgroundImagePart, keepOriginalFace, smoothSkin, removeAcne, increaseSharpness)
         );
 
         const results = await Promise.all(generationPromises);
@@ -338,7 +437,7 @@ export default function App() {
     } finally {
       setIsLoading(false);
     }
-  }, [originalImage, backgroundImage, prompt, numImages]);
+  }, [originalImage, backgroundImage, prompt, numImages, keepOriginalFace, smoothSkin, removeAcne, increaseSharpness]);
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
@@ -368,6 +467,14 @@ export default function App() {
                 backgroundImage={backgroundImage}
                 numImages={numImages}
                 onNumImagesChange={setNumImages}
+                keepOriginalFace={keepOriginalFace}
+                onKeepOriginalFaceChange={setKeepOriginalFace}
+                smoothSkin={smoothSkin}
+                onSmoothSkinChange={setSmoothSkin}
+                removeAcne={removeAcne}
+                onRemoveAcneChange={setRemoveAcne}
+                increaseSharpness={increaseSharpness}
+                onIncreaseSharpnessChange={setIncreaseSharpness}
             />
              {error && <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">{error}</div>}
           </div>
